@@ -102,7 +102,7 @@ function scopeCss(css: string, scope: string): string {
     // Scope each comma-separated selector
     const scoped = trimmed
       .split(",")
-      .map((s) => {
+      .map((s: string) => {
         const t = s.trim();
         if (!t) return "";
         // Already scoped or is a root selector
