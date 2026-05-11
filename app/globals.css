@@ -1,0 +1,489 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 25%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 94%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 25%;
+    --radius: 0.5rem;
+
+    /* Sidebar — dark */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 222 40% 18%;
+    --sidebar-accent-foreground: 210 40% 95%;
+    --sidebar-border: 222 40% 16%;
+    --sidebar-ring: 221 83% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ============================================================
+   QUOTE TEMPLATE STYLES
+   Used by: template editor preview, public quote view
+   ============================================================ */
+
+.quote-template {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  background: #ffffff;
+  color: #1e293b;
+  line-height: 1.6;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* Hero / header */
+.quote-template .hero {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  color: white;
+  padding: 48px 40px;
+}
+
+.quote-template .hero h1,
+.quote-template .hero h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+}
+
+.quote-template .eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #93c5fd;
+  margin-bottom: 8px;
+}
+
+.quote-template .subtitle {
+  font-size: 16px;
+  color: #bfdbfe;
+  margin: 8px 0 0;
+  font-weight: 400;
+}
+
+/* Quote meta bar */
+.quote-template .quote-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.quote-template .quote-meta > * {
+  padding: 18px 24px;
+  border-right: 1px solid #e2e8f0;
+}
+
+.quote-template .quote-meta > *:last-child {
+  border-right: none;
+}
+
+.quote-template .quote-meta .label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.quote-template .quote-meta .value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* Cards */
+.quote-template .card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 28px 32px;
+  margin: 0 32px 24px;
+}
+
+.quote-template .card h2,
+.quote-template .card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #eff6ff;
+}
+
+/* Highlight / callout */
+.quote-template .highlight {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+  padding: 20px 24px;
+  margin: 0 32px 24px;
+}
+
+/* Price grid / totals */
+.quote-template .price-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 300px;
+  margin-left: auto;
+  padding: 16px 0;
+}
+
+.quote-template .price-grid .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 0;
+}
+
+.quote-template .label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.quote-template .price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.quote-template .total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0 4px;
+  border-top: 2px solid #1e3a5f;
+  margin-top: 8px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1e3a5f;
+}
+
+/* Items table */
+.quote-template .items {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: 0 0 24px;
+}
+
+.quote-template .items thead tr {
+  background: #1e3a5f;
+}
+
+.quote-template .items thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.quote-template .items thead th:not(:first-child) {
+  text-align: right;
+}
+
+.quote-template .items tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.quote-template .items tbody tr:last-child {
+  border-bottom: none;
+}
+
+.quote-template .items tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.quote-template .items tbody td {
+  padding: 12px 16px;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.quote-template .items tbody td:not(:first-child) {
+  text-align: right;
+}
+
+.quote-template .items tbody td:last-child {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* Details grid (2-column info layout) */
+.quote-template .details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin: 0 32px 24px;
+}
+
+/* Comparison / feature grid */
+.quote-template .comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 0 32px 24px;
+}
+
+/* Trust / USP grid */
+.quote-template .trust-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 0 32px 24px;
+}
+
+/* Review box */
+.quote-template .review-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.quote-template .stars {
+  color: #f59e0b;
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+/* FAQ */
+.quote-template .faq-item {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 0;
+}
+
+.quote-template .faq-item:last-child {
+  border-bottom: none;
+}
+
+.quote-template .faq-item strong,
+.quote-template .faq-item b {
+  display: block;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 6px;
+}
+
+/* Closing CTA */
+.quote-template .closing {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%);
+  color: white;
+  padding: 40px 40px;
+  text-align: center;
+  margin: 32px 0 0;
+}
+
+.quote-template .closing h2,
+.quote-template .closing h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 12px;
+}
+
+.quote-template .closing p {
+  color: #bfdbfe;
+  margin: 0 0 20px;
+}
+
+/* Contact section */
+.quote-template .contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: 14px;
+  color: #64748b;
+  margin: 16px 0;
+}
+
+.quote-template .contact a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.quote-template .contact a:hover {
+  text-decoration: underline;
+}
+
+/* General typography inside templates */
+.quote-template h1 { font-size: 2rem; font-weight: 800; margin: 0 0 16px; }
+.quote-template h2 { font-size: 1.4rem; font-weight: 700; color: #1e3a5f; margin: 0 0 12px; }
+.quote-template h3 { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0 0 8px; }
+.quote-template p  { margin: 0 0 12px; color: #4b5563; }
+.quote-template p:last-child { margin-bottom: 0; }
+.quote-template a  { color: #3b82f6; }
+
+/* Body / content padding */
+.quote-template > *:not(.hero):not(.closing):not(.quote-meta) {
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+/* Spacing between sections */
+.quote-template > * + * {
+  margin-top: 0;
+}
+
+.quote-template > section,
+.quote-template > div:not(.hero):not(.quote-meta):not(.closing) {
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+
+/* Print / PDF via browser */
+@media print {
+  .quote-template {
+    max-width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+  }
+  .quote-template .hero {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .quote-template .closing {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .quote-template .items thead tr {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* VDV-template section styling */
+.quote-template .qt-section {
+  padding: 28px 32px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.quote-template .qt-section-title {
+  display: inline-flex;
+  align-items: center;
+  background: #f97316;
+  color: white;
+  padding: 7px 18px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 18px;
+}
+
+.quote-template .qt-callout {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-left: 4px solid #f97316;
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #7c2d12;
+  line-height: 1.5;
+}
+
+.quote-template .qt-field-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.quote-template .qt-field-value {
+  font-weight: 600;
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.quote-template .qt-section .card {
+  margin: 0;
+}
+
+.quote-template .qt-section .card + .card {
+  margin-top: 16px;
+}
+
+.quote-template .qt-section h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+}
+
+.quote-template .qt-section > p {
+  margin: 0 0 20px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* Google Docs imported template container */
+.gdoc-import {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #222222;
+  background: #ffffff;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 40px;
+}
+
+/* Sidebar scrollbar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--sidebar-border));
+  border-radius: 2px;
+}
