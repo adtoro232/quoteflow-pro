@@ -48,10 +48,11 @@ export async function GET(
   const q = quote as Quote;
   const safeItems = (items ?? []) as QuoteItem[];
 
-  const element = createElement(QuotePDF, { quote: q, items: safeItems });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const element = createElement(QuotePDF, { quote: q, items: safeItems }) as any;
   const buffer = await renderToBuffer(element);
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${q.quote_number}.pdf"`,
