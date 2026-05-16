@@ -13,8 +13,10 @@ import {
   Mail,
   LogOut,
   ChevronRight,
+  Building2,
 } from "lucide-react";
 import type { Profile } from "@/types";
+import type { Branding } from "@/lib/utils/branding";
 import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
@@ -53,6 +55,11 @@ const navItems = [
 
 const adminItems = [
   {
+    title: "Mijn bedrijf",
+    href: "/settings/bedrijf",
+    icon: Building2,
+  },
+  {
     title: "Instellingen",
     href: "/settings",
     icon: Settings,
@@ -61,9 +68,10 @@ const adminItems = [
 
 interface SidebarProps {
   profile: Profile;
+  branding: Branding;
 }
 
-export function Sidebar({ profile }: SidebarProps) {
+export function Sidebar({ profile, branding }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -83,10 +91,18 @@ export function Sidebar({ profile }: SidebarProps) {
     <div className="flex flex-col h-full bg-sidebar w-64 shrink-0">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-sidebar-border">
-        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
-          <FileText className="w-4 h-4 text-white" />
-        </div>
-        <span className="font-bold text-sidebar-primary text-lg">QuoteFlow Pro</span>
+        {branding.logoUrl ? (
+          <img
+            src={branding.logoUrl}
+            alt={branding.companyName}
+            className="h-8 w-auto object-contain shrink-0"
+          />
+        ) : (
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shrink-0">
+            <FileText className="w-4 h-4 text-white" />
+          </div>
+        )}
+        <span className="font-bold text-sidebar-primary text-lg truncate">{branding.companyName}</span>
       </div>
 
       {/* Nav */}

@@ -155,30 +155,26 @@ export function CustomerQuoteView({ quote, items, token }: CustomerQuoteViewProp
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-100">
       {/* Header */}
       <div className="bg-white border-b shadow-sm">
-        <div className="max-w-4xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-900 rounded-lg flex items-center justify-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-9 h-9 bg-blue-900 rounded-lg flex items-center justify-center shrink-0">
               <FileText className="w-5 h-5 text-white" />
             </div>
-            <div>
-              <p className="font-bold text-slate-900">{companyName}</p>
+            <div className="min-w-0">
+              <p className="font-bold text-slate-900 truncate">{companyName}</p>
               <p className="text-xs text-slate-500">Offerte {quote.quote_number}</p>
             </div>
           </div>
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-          >
+          <Button asChild variant="outline" size="sm" className="shrink-0">
             <a href={`/api/pdf/${quote.id}?token=${token}`}>
               <Download className="w-4 h-4" />
-              Download PDF
+              <span className="hidden sm:inline">Download PDF</span>
             </a>
           </Button>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-6">
         {/* Status banner */}
         {quote.status === "geaccepteerd" && (
           <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-3">
@@ -200,12 +196,14 @@ export function CustomerQuoteView({ quote, items, token }: CustomerQuoteViewProp
 
         {/* Quote body — template or fallback hardcoded layout */}
         {quote.template?.html_content ? (
-          <div
-            className={quote.template.html_content.includes("gdoc-import") ? "shadow-sm" : "quote-template shadow-sm"}
-            dangerouslySetInnerHTML={{
-              __html: renderTemplate(quote.template.html_content, { quote, items }),
-            }}
-          />
+          <div className="overflow-x-auto -mx-1 px-1">
+            <div
+              className={quote.template.html_content.includes("gdoc-import") ? "shadow-sm" : "quote-template shadow-sm"}
+              dangerouslySetInnerHTML={{
+                __html: renderTemplate(quote.template.html_content, { quote, items }),
+              }}
+            />
+          </div>
         ) : (
           <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
             <div className="bg-gradient-to-r from-blue-900 to-blue-800 px-8 py-8 text-white">
@@ -225,7 +223,7 @@ export function CustomerQuoteView({ quote, items, token }: CustomerQuoteViewProp
               </div>
             </div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
               {/* Customer + sender grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div>
@@ -257,7 +255,7 @@ export function CustomerQuoteView({ quote, items, token }: CustomerQuoteViewProp
               )}
 
               {/* Items table */}
-              <div className="overflow-x-auto rounded-xl border">
+              <div className="overflow-x-auto rounded-xl border -mx-1 sm:mx-0">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-slate-50 border-b">
@@ -288,7 +286,7 @@ export function CustomerQuoteView({ quote, items, token }: CustomerQuoteViewProp
 
               {/* Totals */}
               <div className="flex justify-end mt-6">
-                <div className="w-72 space-y-2 text-sm">
+                <div className="w-full sm:w-72 space-y-2 text-sm">
                   <div className="flex justify-between text-slate-600">
                     <span>Subtotaal excl. BTW</span>
                     <span>{formatCurrency(quote.subtotal)}</span>
@@ -320,7 +318,7 @@ export function CustomerQuoteView({ quote, items, token }: CustomerQuoteViewProp
 
         {/* Actions */}
         {!isFinalized && (
-          <div className="bg-white rounded-2xl shadow-sm border p-8">
+          <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-8">
             <h2 className="text-lg font-semibold text-slate-900 mb-2">Uw reactie</h2>
             <p className="text-slate-500 text-sm mb-6">
               Bekijk de offerte en geef uw akkoord of wijs deze af. U kunt ook een opmerking achterlaten.

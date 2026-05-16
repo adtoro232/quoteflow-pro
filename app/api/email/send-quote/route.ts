@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
-import type { Quote, QuoteItem } from "@/types";
+import type { Quote } from "@/types";
 
 export async function POST(req: NextRequest) {
   if (!process.env.RESEND_API_KEY) {
@@ -26,14 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Klant heeft geen e-mailadres" }, { status: 400 });
   }
 
-  const { data: items = [] } = await supabase
-    .from("quote_items")
-    .select("*")
-    .eq("quote_id", quoteId)
-    .order("sort_order");
-
   const q = quote as Quote;
-  const safeItems = (items ?? []) as QuoteItem[];
 
   const companyName = process.env.NEXT_PUBLIC_COMPANY_NAME ?? "Ons Bedrijf";
   const companyEmail = process.env.NEXT_PUBLIC_COMPANY_EMAIL ?? "";
@@ -79,7 +72,6 @@ export async function POST(req: NextRequest) {
       emailIntro,
       emailClosing,
       quote: q,
-      items: safeItems,
       publicUrl,
     }),
   });
@@ -100,14 +92,6 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ success: true });
 }
 
-function formatEuro(amount: number): string {
-  return new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(amount);
-}
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("nl-NL", { day: "numeric", month: "long", year: "numeric" });
-}
-
 interface EmailOptions {
   companyName: string;
   companyEmail: string;
@@ -117,29 +101,16 @@ interface EmailOptions {
   emailIntro: string;
   emailClosing: string;
   quote: Quote;
-  items: QuoteItem[];
   publicUrl: string;
 }
 
 function buildEmailHtml(opts: EmailOptions): string {
-  const { companyName, companyEmail, companyPhone, companyAddress, customerName, emailIntro, emailClosing, quote, items, publicUrl } = opts;
-
-  const itemRows = items.map(item => `
-    <tr>
-      <td style="padding:10px 16px;border-bottom:1px solid #e5e7eb;color:#374151;font-size:14px;">${item.description}</td>
-      <td style="padding:10px 8px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:14px;text-align:center;">${item.quantity} ${item.unit}</td>
-      <td style="padding:10px 16px;border-bottom:1px solid #e5e7eb;color:#374151;font-size:14px;text-align:right;font-weight:600;">${formatEuro(item.line_total)}</td>
-    </tr>
-  `).join("");
+  const { companyName, companyEmail, companyPhone, companyAddress, customerName, emailIntro, emailClosing, quote, publicUrl } = opts;
 
   const messageBlock = quote.customer_message
     ? `<div style="background:#eff6ff;border-left:4px solid #3b82f6;border-radius:4px;padding:16px;margin:24px 0;">
         <p style="margin:0;color:#1e40af;font-size:14px;white-space:pre-wrap;">${quote.customer_message}</p>
        </div>`
-    : "";
-
-  const expiryBlock = quote.expiry_date
-    ? `<tr><td style="padding:6px 0;color:#6b7280;font-size:14px;">Geldig tot</td><td style="padding:6px 0;color:#111827;font-size:14px;font-weight:600;text-align:right;">${formatDate(quote.expiry_date)}</td></tr>`
     : "";
 
   return `<!DOCTYPE html>
@@ -166,36 +137,12 @@ function buildEmailHtml(opts: EmailOptions): string {
 
             ${messageBlock}
 
-            <!-- Items table -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:24px;">
-              <thead>
-                <tr style="background:#f9fafb;">
-                  <th style="padding:10px 16px;text-align:left;font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e5e7eb;">Omschrijving</th>
-                  <th style="padding:10px 8px;text-align:center;font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e5e7eb;">Aantal</th>
-                  <th style="padding:10px 16px;text-align:right;font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e5e7eb;">Totaal</th>
-                </tr>
-              </thead>
-              <tbody>${itemRows}</tbody>
-            </table>
-
-            <!-- Totals -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:32px;">
-              <tr><td style="padding:6px 0;color:#6b7280;font-size:14px;">Subtotaal excl. BTW</td><td style="padding:6px 0;color:#111827;font-size:14px;text-align:right;">${formatEuro(quote.subtotal)}</td></tr>
-              ${quote.discount_amount > 0 ? `<tr><td style="padding:6px 0;color:#ef4444;font-size:14px;">Korting</td><td style="padding:6px 0;color:#ef4444;font-size:14px;text-align:right;">-${formatEuro(quote.discount_amount)}</td></tr>` : ""}
-              <tr><td style="padding:6px 0;color:#6b7280;font-size:14px;">BTW</td><td style="padding:6px 0;color:#111827;font-size:14px;text-align:right;">${formatEuro(quote.vat_amount)}</td></tr>
-              <tr style="border-top:2px solid #e5e7eb;">
-                <td style="padding:12px 0 6px;color:#111827;font-size:16px;font-weight:700;">Totaal incl. BTW</td>
-                <td style="padding:12px 0 6px;color:#1b2b4b;font-size:18px;font-weight:700;text-align:right;">${formatEuro(quote.total)}</td>
-              </tr>
-              ${expiryBlock}
-            </table>
-
             <!-- CTA button -->
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
                 <td align="center" style="padding:8px 0 32px;">
                   <a href="${publicUrl}" style="display:inline-block;background:#1b2b4b;color:#ffffff;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:8px;">
-                    Bekijk &amp; accepteer offerte
+                    Bekijk offerte
                   </a>
                 </td>
               </tr>

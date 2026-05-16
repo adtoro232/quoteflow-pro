@@ -1,10 +1,29 @@
 export type Role = "admin" | "employee";
 
+export interface Company {
+  id: string;
+  name: string;
+  website_url: string | null;
+  primary_color: string;
+  logo_url: string | null;
+  address: string | null;
+  postal_code: string | null;
+  city: string | null;
+  phone: string | null;
+  email: string | null;
+  kvk_number: string | null;
+  vat_number: string | null;
+  iban: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Profile {
   id: string;
   full_name: string;
   role: Role;
   avatar_url: string | null;
+  company_id: string | null;
   created_at: string;
 }
 

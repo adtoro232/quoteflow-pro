@@ -120,10 +120,10 @@ export default async function DashboardPage() {
         </Button>
       </Topbar>
 
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         {/* Welcome */}
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">
+          <h2 className="text-lg sm:text-xl font-semibold text-slate-900">
             Goedemiddag, {profile?.full_name.split(" ")[0]}
           </h2>
           <p className="text-slate-500 text-sm mt-1">
@@ -132,7 +132,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
           {kpis.map((kpi) => (
             <Card key={kpi.title} className="border-0 shadow-sm">
               <CardContent className="p-5">
@@ -161,8 +161,8 @@ export default async function DashboardPage() {
                 </Link>
               </div>
             </CardHeader>
-            <CardContent className="p-0">
-              <table className="w-full text-sm">
+            <CardContent className="p-0 overflow-x-auto">
+              <table className="w-full text-sm min-w-[400px]">
                 <thead>
                   <tr className="border-b bg-slate-50/50">
                     <th className="text-left px-6 py-3 text-xs font-medium text-slate-500">Nummer</th>

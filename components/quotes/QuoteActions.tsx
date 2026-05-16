@@ -12,7 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Copy, Send, Trash2, Loader2, Settings2, Mail } from "lucide-react";
+import { Download, Copy, Send, Trash2, Loader2, Settings2, Mail, MoreHorizontal } from "lucide-react";
 import type { Quote, QuoteStatus } from "@/types";
 
 const statusOptions: { value: QuoteStatus; label: string }[] = [
@@ -159,97 +159,92 @@ export function QuoteActions({ quote, userId, isAdmin }: QuoteActionsProps) {
     router.refresh();
   }
 
+  const [moreOpen, setMoreOpen] = useState(false);
+
   return (
     <div className="flex items-center gap-2">
-      {/* PDF download */}
-      <Button
-        asChild
-        variant="outline"
-        size="sm"
-      >
+      {/* Send email — altijd zichtbaar */}
+      {!["geaccepteerd", "afgewezen", "verlopen"].includes(quote.status) && (
+        <Button size="sm" onClick={handleSendEmail} disabled={loading === "email"}>
+          {loading === "email" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+          <span className="hidden sm:inline">Stuur e-mail</span>
+        </Button>
+      )}
+
+      {/* PDF — altijd zichtbaar */}
+      <Button asChild variant="outline" size="sm">
         <a href={`/api/pdf/${quote.id}`} target="_blank" rel="noopener noreferrer">
           <Download className="w-4 h-4" />
-          PDF
+          <span className="hidden sm:inline">PDF</span>
         </a>
       </Button>
 
-      {/* Duplicate */}
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleDuplicate}
-        disabled={loading === "dup"}
-      >
-        {loading === "dup" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
-        Dupliceren
-      </Button>
-
-      {/* Send email */}
-      {!["geaccepteerd", "afgewezen", "verlopen"].includes(quote.status) && (
-        <Button
-          size="sm"
-          onClick={handleSendEmail}
-          disabled={loading === "email"}
-        >
-          {loading === "email" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-          Stuur e-mail
-        </Button>
-      )}
-
-      {/* Mark as sent (manual, no email) */}
-      {quote.status === "concept" && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleMarkSent}
-          disabled={loading === "sent"}
-        >
-          {loading === "sent" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-          Markeer verzonden
-        </Button>
-      )}
-
-      {/* Status change (admin only) */}
-      {isAdmin && (
-        <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" size="sm">
-              <Settings2 className="w-4 h-4" />
-              Status
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Status aanpassen</DialogTitle>
-            </DialogHeader>
-            <Select value={newStatus} onValueChange={(v) => setNewStatus(v as QuoteStatus)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {statusOptions.map((opt) => (
-                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setStatusOpen(false)}>Annuleren</Button>
-              <Button onClick={handleStatusChange} disabled={loading === "status"}>
-                {loading === "status" && <Loader2 className="w-4 h-4 animate-spin" />}
-                Opslaan
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-
-      {/* Delete */}
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+      {/* Meer acties — dropdown */}
+      <Dialog open={moreOpen} onOpenChange={setMoreOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
-            <Trash2 className="w-4 h-4" />
+          <Button variant="outline" size="sm">
+            <MoreHorizontal className="w-4 h-4" />
           </Button>
         </DialogTrigger>
+        <DialogContent className="max-w-xs">
+          <DialogHeader>
+            <DialogTitle>Acties</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-2 py-2">
+            {/* Mark as sent */}
+            {quote.status === "concept" && (
+              <Button variant="outline" className="justify-start" onClick={() => { setMoreOpen(false); handleMarkSent(); }} disabled={loading === "sent"}>
+                {loading === "sent" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                Markeer als verzonden
+              </Button>
+            )}
+            {/* Duplicate */}
+            <Button variant="outline" className="justify-start" onClick={() => { setMoreOpen(false); handleDuplicate(); }} disabled={loading === "dup"}>
+              {loading === "dup" ? <Loader2 className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
+              Dupliceren
+            </Button>
+            {/* Status (admin) */}
+            {isAdmin && (
+              <Button variant="outline" className="justify-start" onClick={() => { setMoreOpen(false); setStatusOpen(true); }}>
+                <Settings2 className="w-4 h-4" />
+                Status aanpassen
+              </Button>
+            )}
+            {/* Delete */}
+            <Button variant="outline" className="justify-start text-red-600 border-red-200 hover:bg-red-50" onClick={() => { setMoreOpen(false); setDeleteOpen(true); }}>
+              <Trash2 className="w-4 h-4" />
+              Verwijderen
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Status dialog */}
+      <Dialog open={statusOpen} onOpenChange={setStatusOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Status aanpassen</DialogTitle>
+          </DialogHeader>
+          <Select value={newStatus} onValueChange={(v) => setNewStatus(v as QuoteStatus)}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {statusOptions.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setStatusOpen(false)}>Annuleren</Button>
+            <Button onClick={handleStatusChange} disabled={loading === "status"}>
+              {loading === "status" && <Loader2 className="w-4 h-4 animate-spin" />}
+              Opslaan
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete dialog */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Offerte verwijderen</DialogTitle>
