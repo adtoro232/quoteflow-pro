@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createServiceClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { CustomerQuoteView } from "@/components/quotes/CustomerQuoteView";
 import type { Quote, QuoteItem } from "@/types";
@@ -21,7 +21,8 @@ export default async function CustomerQuotePage({
 
   if (!quote) notFound();
 
-  const { data: items = [] } = await supabase
+  const serviceClient = createServiceClient();
+  const { data: items = [] } = await serviceClient
     .from("quote_items")
     .select("*, product:products(id, name, image_url)")
     .eq("quote_id", quote.id)

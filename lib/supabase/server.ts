@@ -26,6 +26,14 @@ export async function createClient() {
   );
 }
 
+export function createServiceClient() {
+  const { createClient } = require("@supabase/supabase-js");
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SECRET_KEY!
+  );
+}
+
 export async function getUser() {
   const supabase = await createClient();
   const {
