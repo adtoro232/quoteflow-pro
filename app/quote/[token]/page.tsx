@@ -21,18 +21,12 @@ export default async function CustomerQuotePage({
 
   if (!quote) notFound();
 
-  // Fetch items via direct REST with service key (bypasses RLS)
-  const itemsRes = await fetch(
-    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/quote_items?quote_id=eq.${quote.id}&select=*,product:products(id,name,image_url)&order=sort_order`,
-    {
-      headers: {
-        apikey: process.env.SUPABASE_SECRET_KEY!,
-        Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY!}`,
-      },
-      cache: "no-store",
-    }
-  );
-  const items = itemsRes.ok ? await itemsRes.json() : [];
+  // Fetch items — anon client works after RLS policy allows public token access
+  const { data: items } = await supabase
+    .from("quote_items")
+    .select("*, product:products(id,name,image_url)")
+    .eq("quote_id", quote.id)
+    .order("sort_order");
 
   // Track opening — update status to 'geopend' if still 'verzonden'
   if (quote.status === "verzonden") {
