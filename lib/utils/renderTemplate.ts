@@ -10,36 +10,24 @@ function buildItemsTable(items: QuoteItem[]): string {
   const rows = items
     .map((item) => {
       const imageUrl = (item.product as { image_url?: string | null } | undefined)?.image_url;
-      const imageCell = imageUrl
-        ? `<img src="${imageUrl}" alt="${item.description}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;display:block;" />`
-        : `<div style="width:48px;height:48px;border-radius:6px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;"></div>`;
-      return `
-    <tr style="border-bottom: 1px solid #dddddd;">
-      <td style="padding: 8px 4px; width: 60px;">${imageCell}</td>
-      <td style="padding: 10px 4px; color: #1b2b4b; font-size: 14px; font-weight: 600;">${item.description}</td>
-      <td style="padding: 10px 4px; color: #555555; font-size: 13px; text-align: right; white-space: nowrap;">${item.quantity} ${item.unit}</td>
-      <td style="padding: 10px 4px; color: #555555; font-size: 13px; text-align: right; white-space: nowrap;">${formatCurrency(item.unit_price)}</td>
-      ${item.discount_percentage > 0 ? `<td style="padding: 10px 4px; color: #555555; font-size: 13px; text-align: right;">${item.discount_percentage}%</td>` : ""}
-      <td style="padding: 10px 4px; color: #555555; font-size: 13px; text-align: right;">${item.vat_percentage}% btw</td>
-      <td style="padding: 10px 4px; color: #1b2b4b; font-size: 14px; font-weight: 700; text-align: right; white-space: nowrap;">${formatCurrency(item.line_total)}</td>
-    </tr>`;
+      const imageHtml = imageUrl
+        ? `<img src="${imageUrl}" alt="${item.description}" style="width:52px;height:52px;object-fit:cover;border-radius:8px;flex-shrink:0;" />`
+        : `<div style="width:52px;height:52px;border-radius:8px;background:#f0f0f0;flex-shrink:0;"></div>`;
+      const discountBadge = item.discount_percentage > 0
+        ? `<span style="background:#f07b00;color:#fff;font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;margin-left:6px;">${item.discount_percentage}% korting</span>`
+        : "";
+      return `<div style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+      ${imageHtml}
+      <div style="flex:1;min-width:0;">
+        <div style="color:#1b2b4b;font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3;">${item.description}${discountBadge}</div>
+        <div style="color:#888888;font-size:12px;">${item.quantity} ${item.unit} &middot; ${formatCurrency(item.unit_price)}/stuk &middot; ${item.vat_percentage}% btw</div>
+      </div>
+      <div style="color:#1b2b4b;font-size:15px;font-weight:800;white-space:nowrap;flex-shrink:0;padding-top:2px;">${formatCurrency(item.line_total)}</div>
+    </div>`;
     })
     .join("");
 
-  return `
-  <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse; border-top: 2px solid #1b2b4b; margin-bottom: 0;">
-    <thead>
-      <tr style="background: #1b2b4b;">
-        <th style="padding: 9px 4px; color: #ffffff; font-size: 11px; font-weight: 700; text-align: left; letter-spacing: 0.04em; text-transform: uppercase; width: 60px;"></th>
-        <th style="padding: 9px 4px; color: #ffffff; font-size: 11px; font-weight: 700; text-align: left; letter-spacing: 0.04em; text-transform: uppercase;">Omschrijving</th>
-        <th style="padding: 9px 4px; color: #ffffff; font-size: 11px; font-weight: 700; text-align: right; letter-spacing: 0.04em; text-transform: uppercase;">Aantal</th>
-        <th style="padding: 9px 4px; color: #ffffff; font-size: 11px; font-weight: 700; text-align: right; letter-spacing: 0.04em; text-transform: uppercase;">Prijs</th>
-        <th style="padding: 9px 4px; color: #ffffff; font-size: 11px; font-weight: 700; text-align: right; letter-spacing: 0.04em; text-transform: uppercase;">BTW</th>
-        <th style="padding: 9px 4px; color: #ffffff; font-size: 11px; font-weight: 700; text-align: right; letter-spacing: 0.04em; text-transform: uppercase;">Totaal</th>
-      </tr>
-    </thead>
-    <tbody>${rows}</tbody>
-  </table>`;
+  return `<div style="border-top:2px solid #1b2b4b;margin-bottom:0;">${rows}</div>`;
 }
 
 export function renderTemplate(html: string, data: TemplateData): string {
