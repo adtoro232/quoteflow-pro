@@ -1,4 +1,4 @@
-import { createClient, createServiceClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { CustomerQuoteView } from "@/components/quotes/CustomerQuoteView";
 import type { Quote, QuoteItem } from "@/types";
@@ -21,12 +21,18 @@ export default async function CustomerQuotePage({
 
   if (!quote) notFound();
 
-  const serviceClient = createServiceClient();
-  const { data: items = [] } = await serviceClient
-    .from("quote_items")
-    .select("*, product:products(id, name, image_url)")
-    .eq("quote_id", quote.id)
-    .order("sort_order");
+  // Fetch items via direct REST with service key (bypasses RLS)
+  const itemsRes = await fetch(
+    `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/quote_items?quote_id=eq.${quote.id}&select=*,product:products(id,name,image_url)&order=sort_order`,
+    {
+      headers: {
+        apikey: process.env.SUPABASE_SECRET_KEY!,
+        Authorization: `Bearer ${process.env.SUPABASE_SECRET_KEY!}`,
+      },
+      cache: "no-store",
+    }
+  );
+  const items = itemsRes.ok ? await itemsRes.json() : [];
 
   // Track opening — update status to 'geopend' if still 'verzonden'
   if (quote.status === "verzonden") {
