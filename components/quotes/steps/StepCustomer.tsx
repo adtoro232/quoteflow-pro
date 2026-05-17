@@ -14,7 +14,7 @@ export function StepCustomer({ customers }: { customers: Customer[] }) {
   const { customer_id, setCustomer } = useQuoteBuilder();
   const [search, setSearch] = useState("");
   const [showNew, setShowNew] = useState(false);
-  const [newForm, setNewForm] = useState({ company_name: "", email: "", phone: "" });
+  const [newForm, setNewForm] = useState({ company_name: "", email: "", phone: "", address: "", postal_code: "", city: "" });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
   const supabase = createClient();
@@ -146,6 +146,31 @@ export function StepCustomer({ customers }: { customers: Customer[] }) {
               <Input
                 value={newForm.phone}
                 onChange={(e) => setNewForm((p) => ({ ...p, phone: e.target.value }))}
+                className="mt-1"
+              />
+            </div>
+            <div className="col-span-2">
+              <Label>Adres</Label>
+              <Input
+                value={newForm.address}
+                onChange={(e) => setNewForm((p) => ({ ...p, address: e.target.value }))}
+                className="mt-1"
+                placeholder="Straat en huisnummer"
+              />
+            </div>
+            <div>
+              <Label>Postcode</Label>
+              <Input
+                value={newForm.postal_code}
+                onChange={(e) => setNewForm((p) => ({ ...p, postal_code: e.target.value }))}
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Plaats</Label>
+              <Input
+                value={newForm.city}
+                onChange={(e) => setNewForm((p) => ({ ...p, city: e.target.value }))}
                 className="mt-1"
               />
             </div>
