@@ -60,7 +60,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     const ext = imageFile.name.split(".").pop();
     const path = `${productId}/${Date.now()}.${ext}`;
     const { error } = await supabase.storage
-      .from("product-images")
+      .from("product-image")
       .upload(path, imageFile, { upsert: true });
     setImageUploading(false);
     if (error) {
@@ -68,7 +68,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
       toast({ title: "Afbeelding upload mislukt", description: error.message, variant: "destructive" });
       return null;
     }
-    const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+    const { data } = supabase.storage.from("product-image").getPublicUrl(path);
     return data.publicUrl;
   }
 

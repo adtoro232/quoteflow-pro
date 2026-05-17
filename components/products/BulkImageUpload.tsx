@@ -60,7 +60,7 @@ export function BulkImageUpload({ products }: { products: Product[] }) {
       const ext = imageFile.name.split(".").pop();
       const path = `${firstId}/bulk-${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
-        .from("product-images")
+        .from("product-image")
         .upload(path, imageFile, { upsert: true });
 
       if (uploadError) {
@@ -68,7 +68,7 @@ export function BulkImageUpload({ products }: { products: Product[] }) {
         return;
       }
 
-      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+      const { data } = supabase.storage.from("product-image").getPublicUrl(path);
       const image_url = data.publicUrl;
 
       // Update all selected products
