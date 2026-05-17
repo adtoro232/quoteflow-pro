@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Plus, Package, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { formatCurrency } from "@/lib/utils";
+import { BulkImageUpload } from "@/components/products/BulkImageUpload";
 import type { Product } from "@/types";
 
 export default async function ProductsPage() {
@@ -21,6 +22,7 @@ export default async function ProductsPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <Topbar>
+        <BulkImageUpload products={safeProducts} />
         <Button asChild size="sm">
           <Link href="/products/new">
             <Plus className="w-4 h-4" />
