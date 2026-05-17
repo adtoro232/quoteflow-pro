@@ -24,7 +24,7 @@ export default async function CustomerQuotePage({
   // Fetch items — anon client works after RLS policy allows public token access
   const { data: items } = await supabase
     .from("quote_items")
-    .select("*")
+    .select("*, product:products(id,name,image_url)")
     .eq("quote_id", quote.id)
     .order("sort_order");
 
