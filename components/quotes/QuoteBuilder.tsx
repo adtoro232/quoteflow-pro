@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useQuoteBuilder } from "@/hooks/use-quote-builder";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { cn, formatCurrency } from "@/lib/utils";
 import { StepCustomer } from "./steps/StepCustomer";
@@ -38,9 +37,7 @@ export function QuoteBuilder({
 }: QuoteBuilderProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const supabase = createClient();
   const [saving, setSaving] = useState(false);
-  const [sendMode, setSendMode] = useState(false);
 
   const {
     step, setStep, customer_id, template_id, items, discount_amount,
@@ -70,63 +67,36 @@ export function QuoteBuilder({
     setSaving(true);
 
     try {
-      // 1. Insert quote
-      const { data: quote, error: quoteError } = await supabase
-        .from("quotes")
-        .insert({
-          customer_id,
-          user_id: userId,
-          template_id: template_id || null,
-          status,
-          quote_date: new Date().toISOString().split("T")[0],
-          expiry_date: expiry_date || null,
-          subtotal: totals.subtotal,
-          discount_amount: totals.discount_amount,
-          vat_amount: totals.vat_amount,
-          total: totals.total,
-          internal_notes: internal_notes || null,
-          customer_message: customer_message || null,
-        })
-        .select()
-        .single();
-
-      console.log("[QuoteBuilder] quote insert", { quote, quoteError });
-
-      if (quoteError || !quote) {
-        toast({ title: "Fout bij aanmaken offerte", description: quoteError?.message ?? "Onbekende fout", variant: "destructive" });
-        return;
-      }
-
-      // 2. Insert items
-      const itemRows = items.map((item, i) => ({
-        quote_id: quote.id,
-        product_id: item.product_id || null,
-        description: item.description,
-        quantity: item.quantity,
-        unit: item.unit,
-        unit_price: item.unit_price,
-        discount_percentage: item.discount_percentage,
-        vat_percentage: item.vat_percentage,
-        line_total: item.line_total,
-        sort_order: i,
-      }));
-
-      const { error: itemsError } = await supabase.from("quote_items").insert(itemRows);
-
-      console.log("[QuoteBuilder] items insert error:", itemsError);
-
-      if (itemsError) {
-        toast({ title: "Fout bij opslaan regels", description: itemsError.message, variant: "destructive" });
-        return;
-      }
-
-      // 3. Activity log (non-blocking)
-      await supabase.from("quote_activity").insert({
-        quote_id: quote.id,
-        user_id: userId,
-        action: status === "verzonden" ? "sent" : "created",
-        description: status === "verzonden" ? "Offerte aangemaakt en verzonden" : "Offerte aangemaakt als concept",
+      // Create quote via server API (service role bypasses RLS)
+      const res = await fetch("/api/quotes/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          quote: {
+            customer_id,
+            template_id: template_id || null,
+            status,
+            quote_date: new Date().toISOString().split("T")[0],
+            expiry_date: expiry_date || null,
+            subtotal: totals.subtotal,
+            discount_amount: totals.discount_amount,
+            vat_amount: totals.vat_amount,
+            total: totals.total,
+            internal_notes: internal_notes || null,
+            customer_message: customer_message || null,
+          },
+          items,
+        }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.quote) {
+        toast({ title: "Fout bij aanmaken offerte", description: data.error ?? "Onbekende fout", variant: "destructive" });
+        return;
+      }
+
+      const quote = data.quote;
 
       // 4. Send email to customer if verzonden
       if (status === "verzonden") {
