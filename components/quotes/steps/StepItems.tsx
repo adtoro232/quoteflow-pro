@@ -27,6 +27,18 @@ export function StepItems({ products }: { products: Product[] }) {
     });
   }
 
+  function addMultiSplit(item: { description: string; unit_price: number; purchase_price: number }) {
+    addItem({
+      product_id: null,
+      description: item.description,
+      quantity: 1,
+      unit: "set",
+      unit_price: item.unit_price,
+      discount_percentage: 0,
+      vat_percentage: 21,
+    });
+  }
+
   function addCustomLine() {
     addItem({
       product_id: null,
@@ -45,6 +57,7 @@ export function StepItems({ products }: { products: Product[] }) {
         <ProductPicker
           products={products}
           onSelect={addFromProduct}
+          onSelectMultiSplit={addMultiSplit}
           onClose={() => setShowPicker(false)}
         />
       )}
