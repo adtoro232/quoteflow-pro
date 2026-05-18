@@ -6,7 +6,7 @@ interface TemplateData {
   items: QuoteItem[];
 }
 
-function buildItemsTable(items: QuoteItem[]): string {
+function buildItemsTable(items: QuoteItem[], discountAmount: number = 0): string {
   const rows = items
     .map((item) => {
       const imageUrl = (item.product as { image_url?: string | null } | undefined)?.image_url;
@@ -32,7 +32,17 @@ function buildItemsTable(items: QuoteItem[]): string {
     })
     .join("");
 
-  return `<div style="border-top:2px solid #1b2b4b;margin-bottom:0;">${rows}</div>`;
+  const discountRow = discountAmount > 0
+    ? `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0f0f0;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:52px;flex-shrink:0;"></div>
+          <div style="color:#f07b00;font-size:13px;font-weight:700;">🎁 Korting</div>
+        </div>
+        <div style="color:#f07b00;font-size:15px;font-weight:800;white-space:nowrap;">- ${formatCurrency(discountAmount)}</div>
+      </div>`
+    : "";
+
+  return `<div style="border-top:2px solid #1b2b4b;margin-bottom:0;">${rows}${discountRow}</div>`;
 }
 
 export function renderTemplate(html: string, data: TemplateData): string {
@@ -69,7 +79,7 @@ export function renderTemplate(html: string, data: TemplateData): string {
     "{{expiry_date}}": quote.expiry_date
       ? formatDateLong(quote.expiry_date)
       : "-",
-    "{{quote_items}}": buildItemsTable(items),
+    "{{quote_items}}": buildItemsTable(items, quote.discount_amount),
     "{{subtotal}}": formatCurrency(quote.subtotal),
     "{{discount}}":
       quote.discount_amount > 0
