@@ -5,10 +5,14 @@ import type { Quote, QuoteItem } from "@/types";
 
 export default async function CustomerQuotePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ preview?: string }>;
 }) {
   const { token } = await params;
+  const { preview } = await searchParams;
+  const isPreview = preview === "1";
 
   // Use service role bypass — RLS doesn't apply to public token access
   const supabase = await createClient();
@@ -28,8 +32,8 @@ export default async function CustomerQuotePage({
     .eq("quote_id", quote.id)
     .order("sort_order");
 
-  // Track opening — update status to 'geopend' if still 'verzonden'
-  if (quote.status === "verzonden") {
+  // Track opening — skip if preview mode (viewed by staff)
+  if (!isPreview && quote.status === "verzonden") {
     await supabase
       .from("quotes")
       .update({ status: "geopend" })

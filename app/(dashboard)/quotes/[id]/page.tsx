@@ -43,6 +43,7 @@ export default async function QuoteDetailPage({
   const safeComments = (comments ?? []) as QuoteComment[];
   const customer = q.customer as ReturnType<typeof Object.assign>;
   const publicUrl = `${process.env.NEXT_PUBLIC_APP_URL}/quote/${q.public_token}`;
+  const previewUrl = `${publicUrl}?preview=1`;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -217,7 +218,7 @@ export default async function QuoteDetailPage({
                   variant="outline"
                   className="w-full border-blue-200 text-blue-700 hover:bg-blue-100"
                 >
-                  <a href={publicUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={previewUrl} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-3.5 h-3.5" />
                     Bekijken als klant
                   </a>
